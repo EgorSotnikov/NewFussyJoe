@@ -3,7 +3,7 @@ import sys
 import os
 
 pygame.init()
-size = width, height = 500, 500
+size = width, height = 1000, 500
 screen = pygame.display.set_mode(size)
 
 
@@ -91,8 +91,8 @@ def generate_level(level):
 
 
 tile_images = {
-    'ground': load_image('Мой_тайл_пола3.png'),
-    'grass': load_image('Мой_тайл_травы_2.png')
+    'ground': load_image('Floor_Tile.png'),
+    'grass': load_image('Grass_Tile.png')
 }
 player_image = load_image('mar.png')
 
