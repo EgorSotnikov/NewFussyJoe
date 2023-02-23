@@ -1,6 +1,7 @@
 import pygame
 import sys
 import os
+from pygame import transform
 
 pygame.init()
 size = width, height = 1000, 500
@@ -29,6 +30,8 @@ def load_image(name, colorkey=None):
         image.set_colorkey(colorkey)
     else:
         image = image.convert_alpha()
+    if name == "Grass_Tile.png" or name == "Floor_Tile.png":
+        return pygame.transform.scale(image, (50, 50))
     return image
 
 
