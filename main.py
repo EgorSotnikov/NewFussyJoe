@@ -4,7 +4,7 @@ import os
 from pygame import transform
 
 pygame.init()
-size = width, height = 1000, 500
+size = width, height = 1500, 750
 screen = pygame.display.set_mode(size)
 
 
@@ -31,7 +31,7 @@ def load_image(name, colorkey=None):
     else:
         image = image.convert_alpha()
     if name == "Grass_Tile.png" or name == "Floor_Tile.png":
-        return pygame.transform.scale(image, (50, 50))
+        return pygame.transform.scale(image, (75, 75))
     return image
 
 
@@ -100,7 +100,7 @@ tile_images = {
 player_image = load_image('mar.png')
 
 player = None
-tile_width = tile_height = 50
+tile_width = tile_height = 75
 tiles_group = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
