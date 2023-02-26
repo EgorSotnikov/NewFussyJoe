@@ -36,6 +36,8 @@ def load_image(name, colorkey=None):
         return pygame.transform.scale(image, (180, 90))
     if name == "Cowshed.png":
         return pygame.transform.scale(image, (600, 300))
+    if name == "VeryNewTable.png":
+        return pygame.transform.scale(image, (200, 100))
     return image
 
 
@@ -89,7 +91,7 @@ def generate_level(level):
             if level[y][x] == '.':
                 Tile('grass', x, y)
             elif level[y][x] == '#':
-                Tile('ground', x, y)
+                Tile('floor', x, y)
             elif level[y][x] == '@':
                 Tile('grass', x, y)
                 x_p, y_p = x, y
@@ -99,23 +101,28 @@ def generate_level(level):
             elif level[y][x] == '^':
                 Tile('grass', x, y)
                 x_cs, y_cs = x, y
+            elif level[y][x] == '-':
+                Tile('floor', x, y)
+                x_t, y_t = x, y
     # вернем игрока, корову, а также размер поля в клетках
-    return Player(x_p, y_p), Cow(x_c, y_c), Cowshed(x_cs, y_cs), x, y
+    return Player(x_p, y_p), Cow(x_c, y_c), Cowshed(x_cs, y_cs), Table(x_t, y_t), x, y
 
 
 tile_images = {
-    'ground': load_image('Floor_Tile.png'),
+    'floor': load_image('Floor_Tile.png'),
     'grass': load_image('Grass_Tile.png')
 }
 cow_image = load_image('NewCow.png')
 cowshed_image = load_image('Cowshed.png')
+table_image = load_image('VeryNewTable.png')
 player_image = load_image('mar.png')
 
 player = None
 tile_width = tile_height = 75
 tiles_group = pygame.sprite.Group()
 cow_group = pygame.sprite.Group()
-cowshed_group = pygame.sprite.Group
+cowshed_group = pygame.sprite.Group()
+table_group = pygame.sprite.Group()
 all_sprites = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 
@@ -138,10 +145,18 @@ class Cow(pygame.sprite.Sprite):
 
 class Cowshed(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
-        super().__init__(cow_group, all_sprites)
+        super().__init__(cowshed_group, all_sprites)
         self.image = cowshed_image
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y)
+
+
+class Table(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(table_group, all_sprites)
+        self.image = table_image
+        self.rect = self.image.get_rect().move(
+            tile_width * pos_x, tile_height * pos_y + 35)
 
 
 class Player(pygame.sprite.Sprite):
@@ -163,7 +178,7 @@ class Player(pygame.sprite.Sprite):
                 self.rect.y += tile_height
 
 
-player, cow, cowshed, level_x, level_y = generate_level(load_level('level.txt'))
+player, cow, cowshed, table, level_x, level_y = generate_level(load_level('level.txt'))
 running = True
 clock = pygame.time.Clock()
 start_screen()
