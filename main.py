@@ -30,7 +30,7 @@ def load_image(name, colorkey=None):
         image.set_colorkey(colorkey)
     else:
         image = image.convert_alpha()
-    if name == "Grass_Tile.png" or name == "Floor_Tile.png":
+    if name == "Grass_Tile.png" or name == "Floor_Tile.png" or name == 'Can.png':
         return pygame.transform.scale(image, (75, 75))
     if name == "NewCow.png":
         return pygame.transform.scale(image, (180, 90))
@@ -95,7 +95,7 @@ def generate_level(level):
             elif level[y][x] == '@':
                 Tile('grass', x, y)
                 x_p, y_p = x, y
-            elif level[y][x] == '/':
+            elif level[y][x] == 'v':
                 Tile('grass', x, y)
                 x_c, y_c = x, y
             elif level[y][x] == '^':
@@ -104,13 +104,16 @@ def generate_level(level):
             elif level[y][x] == '-':
                 Tile('floor', x, y)
                 x_t, y_t = x, y
+            elif level[y][x] == '[':
+                Tile('can', x, y)
     # вернем игрока, корову, а также размер поля в клетках
     return Player(x_p, y_p), Cow(x_c, y_c), Cowshed(x_cs, y_cs), Table(x_t, y_t), x, y
 
 
 tile_images = {
     'floor': load_image('Floor_Tile.png'),
-    'grass': load_image('Grass_Tile.png')
+    'grass': load_image('Grass_Tile.png'),
+    'can': load_image('Can.png')
 }
 cow_image = load_image('NewCow.png')
 cowshed_image = load_image('Cowshed.png')
