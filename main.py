@@ -138,9 +138,17 @@ class Tile(pygame.sprite.Sprite):
 class Cow(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(cow_group, all_sprites)
+        self.iter, self.size_x, self.size_y = 1, 180, 90
         self.image = cow_image
         self.rect = self.image.get_rect().move(
             tile_width * pos_x - 35, tile_height * pos_y + 35)
+
+    def update(self, *args):
+        if self.iter % 30 == 0:
+            self.size_x *= 1.1
+            self.size_y *= 1.1
+            self.image = pygame.transform.scale(self.image, (self.size_x, self.size_y))
+        self.iter += 1
 
 
 class Cowshed(pygame.sprite.Sprite):
@@ -187,6 +195,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         all_sprites.update(event)
+    cow.update()
     screen.fill(pygame.Color("black"))
     all_sprites.draw(screen)
     pygame.display.flip()
