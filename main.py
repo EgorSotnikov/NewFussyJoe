@@ -143,8 +143,10 @@ class Cow(pygame.sprite.Sprite):
         self.rect = self.image.get_rect().move(
             tile_width * pos_x - 35, tile_height * pos_y + 35)
 
-    def update(self, *args):
-        if self.iter % 30 == 0:
+    def ani(self, *args):
+        if self.iter % 300 == 0:
+            self.rect.x -= 0.05 * self.size_x
+            self.rect.y -= 0.1 * self.size_y
             self.size_x *= 1.1
             self.size_y *= 1.1
             self.image = pygame.transform.scale(self.image, (self.size_x, self.size_y))
@@ -195,7 +197,7 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         all_sprites.update(event)
-    cow.update()
+    cow.ani()
     screen.fill(pygame.Color("black"))
     all_sprites.draw(screen)
     pygame.display.flip()
