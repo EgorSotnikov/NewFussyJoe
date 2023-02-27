@@ -139,18 +139,30 @@ class Cow(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(cow_group, all_sprites)
         self.iter, self.size_x, self.size_y = 1, 180, 90
+        self.milk = 0
         self.image = cow_image
         self.rect = self.image.get_rect().move(
             tile_width * pos_x - 35, tile_height * pos_y + 35)
 
     def ani(self, *args):
-        if self.iter % 300 == 0:
+        if self.iter % 300 == 0 and self.milk != 5:
             self.rect.x -= 0.05 * self.size_x
             self.rect.y -= 0.1 * self.size_y
             self.size_x *= 1.1
             self.size_y *= 1.1
             self.image = pygame.transform.scale(self.image, (self.size_x, self.size_y))
+            self.milk += 1
         self.iter += 1
+
+    def update(self, *args):
+        if args and args[0].type == pygame.KEYDOWN:
+            if args[0].key == pygame.K_q and self.milk != 0:
+                self.rect.x += 0.05 * self.size_x
+                self.rect.y += 0.1 * self.size_y
+                self.size_x /= 1.1
+                self.size_y /= 1.1
+                self.image = pygame.transform.scale(self.image, (self.size_x, self.size_y))
+                self.milk -= 1
 
 
 class Cowshed(pygame.sprite.Sprite):
