@@ -36,9 +36,11 @@ def load_image(name, colorkey=None):
         return pygame.transform.scale(image, (180, 90))
     if name == "Cowshed.png":
         return pygame.transform.scale(image, (600, 300))
-    if name == "VeryNewTable.png":
+    if name == "TableEmpty.png":
         return pygame.transform.scale(image, (200, 100))
-    if name == "Home1.png":
+    if name[0:8] == "TableDoc":
+        return pygame.transform.scale(image, (200, 100))
+    if name[0:4] == "Home":
         return pygame.transform.scale(image, (750, 375))
     return image
 
@@ -111,6 +113,8 @@ def generate_level(level):
             elif level[y][x] == '+':
                 Tile('floor', x, y)
                 x_h, y_h = x, y
+            elif level[y][x]:
+                Tile('ht', x, y)
     # вернем игрока, корову, а также размер поля в клетках
     return Home(x_h, y_h), Player(x_p, y_p), Cow(x_c, y_c), Cowshed(x_cs, y_cs), Table(x_t, y_t), x, y
 
@@ -118,11 +122,12 @@ def generate_level(level):
 tile_images = {
     'floor': load_image('Floor_Tile.png'),
     'grass': load_image('Grass_Tile.png'),
-    'can': load_image('Can.png')
+    'can': load_image('Can.png'),
+    'ht': load_image('HomeTile.png')
 }
 cow_image = load_image('NewCow.png')
 cowshed_image = load_image('Cowshed.png')
-table_image = load_image('VeryNewTable.png')
+table_image = load_image('TableEmpty.png')
 home_image = load_image('Home1.png')
 player_image = load_image('mar.png')
 
@@ -190,8 +195,19 @@ class Table(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(table_group, all_sprites)
         self.image = table_image
+        self.iter = 1
+        self.picture = 0
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y + 35)
+
+    def ani(self):
+        if self.iter % 60 == 0:
+            self.picture += 1
+        if self.picture and self.picture <= 12:
+            self.image = load_image(f'TableDoc{self.picture}.png')
+        else:
+            self.image = load_image('TableEmpty.png')
+        self.iter += 1
 
 
 class Home(pygame.sprite.Sprite):
@@ -199,7 +215,7 @@ class Home(pygame.sprite.Sprite):
         super().__init__(table_group, all_sprites)
         self.image = home_image
         self.rect = self.image.get_rect().move(
-            tile_width * pos_x, tile_height * pos_y)
+            tile_width * pos_x, tile_height * pos_y - 37.5)
 
 
 class Player(pygame.sprite.Sprite):
@@ -236,6 +252,8 @@ while running:
             running = False
         all_sprites.update(event)
     cow.ani()
+    table.ani()
+    #home.ani()
     screen.fill(pygame.Color("black"))
     all_sprites.draw(screen)
     pygame.display.flip()
