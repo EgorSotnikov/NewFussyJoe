@@ -130,6 +130,9 @@ all_sprites = pygame.sprite.Group()
 player_group = pygame.sprite.Group()
 
 
+milk_button = 0
+
+
 class Tile(pygame.sprite.Sprite):
     def __init__(self, tile_type, pos_x, pos_y):
         super().__init__(tiles_group, all_sprites)
@@ -159,7 +162,7 @@ class Cow(pygame.sprite.Sprite):
 
     def update(self, *args):
         if args and args[0].type == pygame.KEYDOWN:
-            if args[0].key == pygame.K_q and self.milk != 0:
+            if args[0].key == pygame.K_SPACE and self.milk != 0 and milk_button == 1:
                 self.rect.x += 0.05 * self.size_x
                 self.rect.y += 0.1 * self.size_y
                 self.size_x /= 1.1
@@ -189,7 +192,7 @@ class Player(pygame.sprite.Sprite):
         super().__init__(player_group, all_sprites)
         self.image = player_image
         self.rect = self.image.get_rect().move(
-            tile_width * pos_x + 15, tile_height * pos_y + 5)
+            tile_width * pos_x + 25, tile_height * pos_y + 15)
 
     def update(self, *args):
         if args and args[0].type == pygame.KEYDOWN:
@@ -201,6 +204,11 @@ class Player(pygame.sprite.Sprite):
                 self.rect.y -= tile_height
             elif args[0].key == pygame.K_DOWN:
                 self.rect.y += tile_height
+        global milk_button
+        if self.rect.x == 625 and self.rect.y == 240:
+            milk_button = 1
+        else:
+            milk_button = 0
 
 
 player, cow, cowshed, table, level_x, level_y = generate_level(load_level('level.txt'))
