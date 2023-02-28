@@ -201,9 +201,9 @@ class Table(pygame.sprite.Sprite):
             tile_width * pos_x, tile_height * pos_y + 35)
 
     def ani(self):
-        if self.iter % 60 == 0:
+        if self.iter % 60 == 0 and self.picture < 12:
             self.picture += 1
-        if self.picture and self.picture <= 12:
+        if self.picture:
             self.image = load_image(f'TableDoc{self.picture}.png')
         else:
             self.image = load_image('TableEmpty.png')
@@ -214,8 +214,16 @@ class Home(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(table_group, all_sprites)
         self.image = home_image
+        self.iter = 1
+        self.picture = 1
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y - 37.5)
+
+    def ani(self):
+        if self.iter % 60 == 0 and self.picture < 12:
+            self.picture += 1
+        self.image = load_image(f'Home{self.picture}.png')
+        self.iter += 1
 
 
 class Player(pygame.sprite.Sprite):
@@ -253,7 +261,7 @@ while running:
         all_sprites.update(event)
     cow.ani()
     table.ani()
-    #home.ani()
+    home.ani()
     screen.fill(pygame.Color("black"))
     all_sprites.draw(screen)
     pygame.display.flip()
