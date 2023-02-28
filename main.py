@@ -30,7 +30,7 @@ def load_image(name, colorkey=None):
         image.set_colorkey(colorkey)
     else:
         image = image.convert_alpha()
-    if name == "Grass_Tile.png" or name == "Floor_Tile.png" or name == 'Can.png':
+    if name == "Grass_Tile.png" or name == "Floor_Tile.png" or name == 'Can.png' or name == 'Work.png':
         return pygame.transform.scale(image, (75, 75))
     if name == "NewCow.png":
         return pygame.transform.scale(image, (180, 90))
@@ -113,8 +113,10 @@ def generate_level(level):
             elif level[y][x] == '+':
                 Tile('floor', x, y)
                 x_h, y_h = x, y
-            elif level[y][x]:
+            elif level[y][x] == '*':
                 Tile('ht', x, y)
+            elif level[y][x] == '|':
+                Tile('work', x, y)
     # вернем игрока, корову, а также размер поля в клетках
     return Home(x_h, y_h), Player(x_p, y_p), Cow(x_c, y_c), Cowshed(x_cs, y_cs), Table(x_t, y_t), x, y
 
@@ -123,11 +125,12 @@ tile_images = {
     'floor': load_image('Floor_Tile.png'),
     'grass': load_image('Grass_Tile.png'),
     'can': load_image('Can.png'),
-    'ht': load_image('HomeTile.png')
+    'ht': load_image('HomeTile.png'),
+    'work': load_image('Work.png')
 }
 cow_image = load_image('NewCow.png')
 cowshed_image = load_image('Cowshed.png')
-table_image = load_image('TableEmpty.png')
+table_image = load_image('TableDoc0.png')
 home_image = load_image('Home1.png')
 player_image = load_image('mar.png')
 
@@ -143,6 +146,7 @@ player_group = pygame.sprite.Group()
 
 
 milk_button = 0
+work_button = 0
 
 
 class Tile(pygame.sprite.Sprite):
@@ -163,7 +167,7 @@ class Cow(pygame.sprite.Sprite):
             tile_width * pos_x - 35, tile_height * pos_y + 35)
 
     def ani(self, *args):
-        if self.iter % 300 == 0 and self.milk != 5:
+        if self.iter % 120 == 0 and self.milk != 6:
             self.rect.x -= 0.05 * self.size_x
             self.rect.y -= 0.1 * self.size_y
             self.size_x *= 1.1
@@ -201,13 +205,16 @@ class Table(pygame.sprite.Sprite):
             tile_width * pos_x, tile_height * pos_y + 35)
 
     def ani(self):
-        if self.iter % 60 == 0 and self.picture < 12:
+        if self.iter % 120 == 0 and self.picture < 12:
             self.picture += 1
-        if self.picture:
-            self.image = load_image(f'TableDoc{self.picture}.png')
-        else:
-            self.image = load_image('TableEmpty.png')
+        self.image = load_image(f'TableDoc{self.picture}.png')
         self.iter += 1
+
+    def update(self, *args):
+        if args and args[0].type == pygame.KEYDOWN:
+            if args[0].key == pygame.K_SPACE and self.picture != 0 and work_button == 1:
+                self.picture -= 1
+                self.image = self.image = load_image(f'TableDoc{self.picture}.png')
 
 
 class Home(pygame.sprite.Sprite):
@@ -220,7 +227,7 @@ class Home(pygame.sprite.Sprite):
             tile_width * pos_x, tile_height * pos_y - 37.5)
 
     def ani(self):
-        if self.iter % 60 == 0 and self.picture < 12:
+        if self.iter % 120 == 0 and self.picture < 12:
             self.picture += 1
         self.image = load_image(f'Home{self.picture}.png')
         self.iter += 1
@@ -248,6 +255,11 @@ class Player(pygame.sprite.Sprite):
             milk_button = 1
         else:
             milk_button = 0
+        global work_button
+        if self.rect.x == 1075 and self.rect.y == 240:
+            work_button = 1
+        else:
+            work_button = 0
 
 
 home, player, cow, cowshed, table, level_x, level_y = generate_level(load_level('level.txt'))
