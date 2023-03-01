@@ -152,6 +152,7 @@ player_group = pygame.sprite.Group()
 
 milk_button = 0
 work_button = 0
+clear_button = 0
 
 
 class Tile(pygame.sprite.Sprite):
@@ -237,6 +238,12 @@ class Home(pygame.sprite.Sprite):
         self.image = load_image(f'Home{self.picture}.png')
         self.iter += 1
 
+    def update(self, *args):
+        if args and args[0].type == pygame.KEYDOWN:
+            if args[0].key == pygame.K_SPACE and self.picture != 1 and clear_button == 1:
+                self.picture -= 1
+                self.image = self.image = load_image(f'Home{self.picture}.png')
+
 
 class ClearButton(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
@@ -273,6 +280,11 @@ class Player(pygame.sprite.Sprite):
             work_button = 1
         else:
             work_button = 0
+        global clear_button
+        if self.rect.x == 1150 and self.rect.y == 465:
+            clear_button = 1
+        else:
+            clear_button = 0
 
 
 home, cow, cowshed, table, clear, player, level_x, level_y = generate_level(load_level('level.txt'))
