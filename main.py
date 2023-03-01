@@ -120,6 +120,8 @@ def generate_level(level):
                 Tile('work', x, y)
             elif level[y][x] == ':':
                 x_cl, y_cl = x, y
+            elif level[y][x] == '0':
+                Tile('score', x, y)
     # вернем игрока, корову, а также размер поля в клетках
     return Home(x_h, y_h), Cow(x_c, y_c), Cowshed(x_cs, y_cs), Table(x_t, y_t), \
            ClearButton(x_cl, y_cl), Player(x_p, y_p), x, y
@@ -130,7 +132,8 @@ tile_images = {
     'grass': load_image('Grass_Tile.png'),
     'can': load_image('Can.png'),
     'ht': load_image('HomeTile.png'),
-    'work': load_image('Work.png')
+    'work': load_image('Work.png'),
+    'score': load_image('Score.png')
 }
 clear_image = load_image('Clear.png')
 cow_image = load_image('NewCow.png')
@@ -153,6 +156,10 @@ player_group = pygame.sprite.Group()
 milk_button = 0
 work_button = 0
 clear_button = 0
+milk_level = 0
+work_level = 0
+bath_level = 0
+time_level = 0
 
 
 class Tile(pygame.sprite.Sprite):
@@ -167,30 +174,31 @@ class Cow(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(cow_group, all_sprites)
         self.iter, self.size_x, self.size_y = 1, 180, 90
-        self.milk = 0
         self.image = cow_image
         self.rect = self.image.get_rect().move(
-            tile_width * pos_x - 35, tile_height * pos_y + 35)
+            tile_width * pos_x - 35, tile_height * pos_y - 15)
 
     def ani(self, *args):
-        if self.iter % 120 == 0 and self.milk != 6:
+        global milk_level
+        if self.iter % 120 == 0 and milk_level != 6:
             self.rect.x -= 0.05 * self.size_x
             self.rect.y -= 0.1 * self.size_y
             self.size_x *= 1.1
             self.size_y *= 1.1
             self.image = pygame.transform.scale(self.image, (self.size_x, self.size_y))
-            self.milk += 1
+            milk_level += 1
         self.iter += 1
 
     def update(self, *args):
+        global milk_level
         if args and args[0].type == pygame.KEYDOWN:
-            if args[0].key == pygame.K_SPACE and self.milk != 0 and milk_button == 1:
+            if args[0].key == pygame.K_SPACE and milk_level != 0 and milk_button == 1:
                 self.rect.x += 0.05 * self.size_x
                 self.rect.y += 0.1 * self.size_y
                 self.size_x /= 1.1
                 self.size_y /= 1.1
                 self.image = pygame.transform.scale(self.image, (self.size_x, self.size_y))
-                self.milk -= 1
+                milk_level -= 1
 
 
 class Cowshed(pygame.sprite.Sprite):
@@ -198,7 +206,7 @@ class Cowshed(pygame.sprite.Sprite):
         super().__init__(cowshed_group, all_sprites)
         self.image = cowshed_image
         self.rect = self.image.get_rect().move(
-            tile_width * pos_x, tile_height * pos_y)
+            tile_width * pos_x, tile_height * pos_y - 50)
 
 
 class Table(pygame.sprite.Sprite):
@@ -206,21 +214,22 @@ class Table(pygame.sprite.Sprite):
         super().__init__(table_group, all_sprites)
         self.image = table_image
         self.iter = 1
-        self.picture = 0
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y + 35)
 
     def ani(self):
-        if self.iter % 120 == 0 and self.picture < 12:
-            self.picture += 1
-        self.image = load_image(f'TableDoc{self.picture}.png')
+        global work_level
+        if self.iter % 120 == 0 and work_level < 12:
+            work_level += 1
+        self.image = load_image(f'TableDoc{work_level}.png')
         self.iter += 1
 
     def update(self, *args):
+        global work_level
         if args and args[0].type == pygame.KEYDOWN:
-            if args[0].key == pygame.K_SPACE and self.picture != 0 and work_button == 1:
-                self.picture -= 1
-                self.image = self.image = load_image(f'TableDoc{self.picture}.png')
+            if args[0].key == pygame.K_SPACE and work_level != 0 and work_button == 1:
+                work_level -= 1
+                self.image = self.image = load_image(f'TableDoc{work_level}.png')
 
 
 class Home(pygame.sprite.Sprite):
@@ -228,21 +237,22 @@ class Home(pygame.sprite.Sprite):
         super().__init__(table_group, all_sprites)
         self.image = home_image
         self.iter = 1
-        self.picture = 1
         self.rect = self.image.get_rect().move(
             tile_width * pos_x, tile_height * pos_y - 37.5)
 
     def ani(self):
-        if self.iter % 120 == 0 and self.picture < 12:
-            self.picture += 1
-        self.image = load_image(f'Home{self.picture}.png')
+        global bath_level
+        if self.iter % 120 == 0 and bath_level + 1 < 13:
+            bath_level += 1
+        self.image = load_image(f'Home{bath_level + 1}.png')
         self.iter += 1
 
     def update(self, *args):
         if args and args[0].type == pygame.KEYDOWN:
-            if args[0].key == pygame.K_SPACE and self.picture != 1 and clear_button == 1:
-                self.picture -= 1
-                self.image = self.image = load_image(f'Home{self.picture}.png')
+            global bath_level
+            if args[0].key == pygame.K_SPACE and bath_level + 1 != 1 and clear_button == 1:
+                bath_level -= 1
+                self.image = self.image = load_image(f'Home{bath_level + 1}.png')
 
 
 class ClearButton(pygame.sprite.Sprite):
@@ -301,6 +311,15 @@ while running:
     home.ani()
     screen.fill(pygame.Color("black"))
     all_sprites.draw(screen)
+    score_line = f'Time: {time_level // 60} Cow: {milk_level}  Work: {work_level}  Bath: {bath_level}'
+    font = pygame.font.Font(None, 60)
+    string_rendered = font.render(score_line, 1, pygame.Color('white'))
+    intro_rect = string_rendered.get_rect()
+    intro_rect.top = 25
+    intro_rect.height = 50
+    intro_rect.x = 450
+    screen.blit(string_rendered, intro_rect)
+    time_level += 1
     pygame.display.flip()
     clock.tick(60)
 pygame.quit()
