@@ -30,7 +30,8 @@ def load_image(name, colorkey=None):
         image.set_colorkey(colorkey)
     else:
         image = image.convert_alpha()
-    if name == "Grass_Tile.png" or name == "Floor_Tile.png" or name == 'Can.png' or name == 'Work.png':
+    if name == "Grass_Tile.png" or name == "Floor_Tile.png" or name == 'Can.png' or name == 'Work.png' or \
+            name == 'Clear.png':
         return pygame.transform.scale(image, (75, 75))
     if name == "NewCow.png":
         return pygame.transform.scale(image, (180, 90))
@@ -117,8 +118,11 @@ def generate_level(level):
                 Tile('ht', x, y)
             elif level[y][x] == '|':
                 Tile('work', x, y)
+            elif level[y][x] == ':':
+                x_cl, y_cl = x, y
     # вернем игрока, корову, а также размер поля в клетках
-    return Home(x_h, y_h), Player(x_p, y_p), Cow(x_c, y_c), Cowshed(x_cs, y_cs), Table(x_t, y_t), x, y
+    return Home(x_h, y_h), Cow(x_c, y_c), Cowshed(x_cs, y_cs), Table(x_t, y_t), \
+           ClearButton(x_cl, y_cl), Player(x_p, y_p), x, y
 
 
 tile_images = {
@@ -128,6 +132,7 @@ tile_images = {
     'ht': load_image('HomeTile.png'),
     'work': load_image('Work.png')
 }
+clear_image = load_image('Clear.png')
 cow_image = load_image('NewCow.png')
 cowshed_image = load_image('Cowshed.png')
 table_image = load_image('TableDoc0.png')
@@ -233,6 +238,14 @@ class Home(pygame.sprite.Sprite):
         self.iter += 1
 
 
+class ClearButton(pygame.sprite.Sprite):
+    def __init__(self, pos_x, pos_y):
+        super().__init__(cowshed_group, all_sprites)
+        self.image = clear_image
+        self.rect = self.image.get_rect().move(
+            tile_width * pos_x, tile_height * pos_y - 5)
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, pos_x, pos_y):
         super().__init__(player_group, all_sprites)
@@ -262,7 +275,7 @@ class Player(pygame.sprite.Sprite):
             work_button = 0
 
 
-home, player, cow, cowshed, table, level_x, level_y = generate_level(load_level('level.txt'))
+home, cow, cowshed, table, clear, player, level_x, level_y = generate_level(load_level('level.txt'))
 running = True
 clock = pygame.time.Clock()
 start_screen()
