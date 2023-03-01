@@ -1,6 +1,7 @@
 import pygame
 import sys
 import os
+import sqlite3
 from pygame import transform
 
 pygame.init()
@@ -81,7 +82,16 @@ def start_screen():
 
 
 def finish_screen(cause, t):
-    end_text = [cause, f"Вы продержались {t} секунд.", "Игра Егора Сотникова"]
+    con = sqlite3.connect("RecordTable.sqlite")
+    cur = con.cursor()
+    cur.execute(f"""INSERT INTO Records VALUES({t})""")
+    con.commit()
+    records = cur.execute("""SELECT * FROM Records
+            ORDER BY Score""").fetchall()
+    print(records)
+    end_text = [cause, f"Вы продержались {t} секунд.", "Игра Егора Сотникова", "Рекорды:", f"1) {str(records[-1][0])}",
+                f"2) {str(records[-2][0])}", f"3) {str(records[-3][0])}", f"4) {str(records[-4][0])}",
+                f"5) {str(records[-5][0])}"]
     fon = pygame.transform.scale(load_image('Start.jpg'), (width, height))
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 60)
@@ -103,7 +113,7 @@ def finish_screen(cause, t):
                 running = False
             elif event.type == pygame.KEYDOWN or \
                     event.type == pygame.MOUSEBUTTONDOWN:
-                return  # начинаем игру
+                return
         pygame.display.flip()
         clock.tick(FPS)
 
