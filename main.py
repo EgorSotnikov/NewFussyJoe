@@ -47,15 +47,19 @@ def load_image(name, colorkey=None):
 
 
 def start_screen():
-    intro_text = ["ЗАСТАВКА", "",
-                  "Правила игры",
-                  "Если в правилах несколько строк,",
-                  "приходится выводить их построчно"]
+    intro_text = ["Правила игры:",
+                  "с каждой секундой увеличивается кол-во молока в корове,",
+                  "документов на столе и воды в ванне. Для перемещения используйте",
+                  "стрелки. Чтобы подоить корову, подписать документ или слить",
+                  "воду из ванны встаньте на нужную кнопку и нажмите 'Пробел'.",
+                  "Если заполненность коровы/стола/ванны достигнет 12,",
+                  "то игра закончится. Ваша задача - продержаться максимально долго.",
+                  "Удачи!"]
 
-    fon = pygame.transform.scale(load_image('fon.jpg'), (width, height))
+    fon = pygame.transform.scale(load_image('Start.jpg'), (width, height))
     screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 30)
-    text_coord = 50
+    font = pygame.font.Font(None, 60)
+    text_coord = 200
     for line in intro_text:
         string_rendered = font.render(line, 1, pygame.Color('white'))
         intro_rect = string_rendered.get_rect()
@@ -281,7 +285,7 @@ class Player(pygame.sprite.Sprite):
             elif args[0].key == pygame.K_DOWN:
                 self.rect.y += tile_height
         global milk_button
-        if self.rect.x == 625 and self.rect.y == 240:
+        if self.rect.x == 475 and self.rect.y == 390:
             milk_button = 1
         else:
             milk_button = 0
