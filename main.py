@@ -212,14 +212,14 @@ class Cow(pygame.sprite.Sprite):
 
     def ani(self, *args):
         global milk_level
-        if self.iter % 120 == 0 and milk_level != 12:
+        if self.iter % 45 == 0 and milk_level != 12:
             self.rect.x -= 0.025 * self.size_x
             self.rect.y -= 0.05 * self.size_y
             self.size_x *= 1.05
             self.size_y *= 1.05
             self.image = pygame.transform.scale(self.image, (self.size_x, self.size_y))
             milk_level += 1
-        elif self.iter % 120 == 0 and milk_level == 12:
+        elif self.iter % 45 == 0 and milk_level == 12:
             global status
             status = "Корова лопнула!"
         self.iter += 1
@@ -228,10 +228,10 @@ class Cow(pygame.sprite.Sprite):
         global milk_level
         if args and args[0].type == pygame.KEYDOWN:
             if args[0].key == pygame.K_SPACE and milk_level != 0 and milk_button == 1:
-                self.rect.x += 0.05 * self.size_x
-                self.rect.y += 0.1 * self.size_y
-                self.size_x /= 1.1
-                self.size_y /= 1.1
+                self.rect.x += 0.025 * self.size_x
+                self.rect.y += 0.05 * self.size_y
+                self.size_x /= 1.05
+                self.size_y /= 1.05
                 self.image = pygame.transform.scale(self.image, (self.size_x, self.size_y))
                 milk_level -= 1
 
@@ -254,9 +254,9 @@ class Table(pygame.sprite.Sprite):
 
     def ani(self):
         global work_level
-        if self.iter % 120 == 0 and work_level < 12:
+        if self.iter % 45 == 0 and work_level < 12:
             work_level += 1
-        elif self.iter % 120 == 0 and work_level == 12:
+        elif self.iter % 45 == 0 and work_level == 12:
             global status
             status = "Слишком много документов!"
         self.image = load_image(f'TableDoc{work_level}.png')
@@ -280,9 +280,9 @@ class Home(pygame.sprite.Sprite):
 
     def ani(self):
         global bath_level
-        if self.iter % 120 == 0 and bath_level + 1 < 13:
+        if self.iter % 45 == 0 and bath_level + 1 < 13:
             bath_level += 1
-        elif self.iter % 120 == 0 and bath_level == 12:
+        elif self.iter % 45 == 0 and bath_level == 12:
             global status
             status = "Ванную затопило!"
         self.image = load_image(f'Home{bath_level + 1}.png')
