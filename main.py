@@ -80,6 +80,34 @@ def start_screen():
         clock.tick(FPS)
 
 
+def finish_screen(cause, t):
+    end_text = [cause, f"Вы продержались {t} секунд.", "Игра Егора Сотникова"]
+    fon = pygame.transform.scale(load_image('Start.jpg'), (width, height))
+    screen.blit(fon, (0, 0))
+    font = pygame.font.Font(None, 60)
+    text_coord = 200
+    for line in end_text:
+        string_rendered = font.render(line, 1, pygame.Color('white'))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = 10
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+    clock = pygame.time.Clock()
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                terminate()
+                global running
+                running = False
+            elif event.type == pygame.KEYDOWN or \
+                    event.type == pygame.MOUSEBUTTONDOWN:
+                return  # начинаем игру
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
 def load_level(filename):
     filename = "data/" + filename
     # читаем уровень, убирая символы перевода строки
@@ -184,13 +212,16 @@ class Cow(pygame.sprite.Sprite):
 
     def ani(self, *args):
         global milk_level
-        if self.iter % 120 == 0 and milk_level != 6:
-            self.rect.x -= 0.05 * self.size_x
-            self.rect.y -= 0.1 * self.size_y
-            self.size_x *= 1.1
-            self.size_y *= 1.1
+        if self.iter % 120 == 0 and milk_level != 12:
+            self.rect.x -= 0.025 * self.size_x
+            self.rect.y -= 0.05 * self.size_y
+            self.size_x *= 1.05
+            self.size_y *= 1.05
             self.image = pygame.transform.scale(self.image, (self.size_x, self.size_y))
             milk_level += 1
+        elif self.iter % 120 == 0 and milk_level == 12:
+            global status
+            status = "Корова лопнула!"
         self.iter += 1
 
     def update(self, *args):
@@ -225,6 +256,9 @@ class Table(pygame.sprite.Sprite):
         global work_level
         if self.iter % 120 == 0 and work_level < 12:
             work_level += 1
+        elif self.iter % 120 == 0 and work_level == 12:
+            global status
+            status = "Слишком много документов!"
         self.image = load_image(f'TableDoc{work_level}.png')
         self.iter += 1
 
@@ -248,6 +282,9 @@ class Home(pygame.sprite.Sprite):
         global bath_level
         if self.iter % 120 == 0 and bath_level + 1 < 13:
             bath_level += 1
+        elif self.iter % 120 == 0 and bath_level == 12:
+            global status
+            status = "Ванную затопило!"
         self.image = load_image(f'Home{bath_level + 1}.png')
         self.iter += 1
 
@@ -302,10 +339,10 @@ class Player(pygame.sprite.Sprite):
 
 
 home, cow, cowshed, table, clear, player, level_x, level_y = generate_level(load_level('level.txt'))
-running = True
+status = ''
 clock = pygame.time.Clock()
 start_screen()
-while running:
+while status == '':
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
@@ -326,4 +363,5 @@ while running:
     time_level += 1
     pygame.display.flip()
     clock.tick(60)
+finish_screen(status, time_level // 60)
 pygame.quit()
